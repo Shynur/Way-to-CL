@@ -46,6 +46,11 @@ eq eql equal equalp
 documentation 获取函数文档字符串
 funcall
 apply 接受 loose arguments 且最后一个参数是列表
+vector (vector ...) ==> #(...)
+make-array
+vector-push vector-push-extend
+alpha-char-p
+(concatenate 'vector #(1 2) '(3 4)) ==> #(1 2 3 4)
 
 (defun make-rectangle (width &optional (height width height-supplied-p)) ...)
 (defun foo (&key (a 0) (b 0 b-supplied-p) ((:charlie c) (+ a b))) ...)
