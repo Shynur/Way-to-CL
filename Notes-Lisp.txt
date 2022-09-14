@@ -1,0 +1,53 @@
+C-c RET 调用 slime-macroexpansion 函数
+C-c C-c 编译函数
+C-c C-z 回到 REPL
+C-c C-l 加载文件
+C-c C-k 编译并加载
+, cd filename 改变 slime 所认为的当前目录
+
+10 个用于语法目的而不能直接出现在 names 中的字符: () '" `, :; \|
+标准的编码风格是将代码全部小写, 然后让读取器将 names 转化成大写
+;;;; 头文件注释
+;;;  段落注释
+;;   行间注释
+;    行尾注释
+
+宏
+setf (setf place value)
+defvar (defvar *var* nil)
+incf decf
+push (push elem a-list)
+pop
+rotatef shiftf 左移
+dolist (dolist (elem a-list) (...))
+or (or (...) (...) ...) 依次求值后返回第一个非空值
+loop 循环执行一个表达式体直到调用
+with-open-file (with-open-file (var fname ...) (...))
+with-standard-io-syntax 确保那些影响 READ 和 PRINT 的特定变量被设置成标准值
+defun
+
+函数
+remove-if-not (remove-if-not #'evenp '(1 2 3 4) ==> (2 4)
+force-outpout (force-output *query-io*)
+read-line (read-line *query-io*) ==> 读取的字符串 (不包括换行符)
+parse-integer (parse-integer "123" :junk-allowed t)
+read REPL 使用了它
+format
+list
+getf (getf a-plist :a) 与 setf 具有类似的名字纯属巧合
+y-or-n-p
+equal
+mapcar (setf a-list (mapcar #'modifier a-list))
+reverse
+macroexpand-1 (macroexpand-1 '(func ...))
+compile-file
+load
+eq eql equal equalp
+documentation 获取函数文档字符串
+funcall
+apply 接受 loose arguments 且最后一个参数是列表
+
+(defun make-rectangle (width &optional (height width height-supplied-p)) ...)
+(defun foo (&key (a 0) (b 0 b-supplied-p) ((:charlie c) (+ a b))) ...)
+首先是必要形参, 其次是可选形参, 再次是剩余形参, 最后才是关键字形参.
+如果需要同时使用 &optional 和 &key, 首先应该想办法只使用 &key
