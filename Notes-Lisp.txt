@@ -25,6 +25,8 @@ loop 循环执行一个表达式体直到调用
 with-open-file (with-open-file (var fname ...) (...))
 with-standard-io-syntax 确保那些影响 READ 和 PRINT 的特定变量被设置成标准值
 defun
+pushnew
+destructuring-bind
 
 函数
 remove-if-not (remove-if-not #'evenp '(1 2 3 4) ==> (2 4)
