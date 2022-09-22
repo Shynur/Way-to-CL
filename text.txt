@@ -1,3 +1,0 @@
-hello!)
-456
-"a string" ; this is a comment
