@@ -1,7 +1,8 @@
-(defvar *%%account-number* -1)
 (defclass bank-account ()
-  ((ID
-    :initform      (incf *%%account-number*)
+  ((%%account-number
+    :allocation    :class
+    :initform      -1)
+   (ID
     :reader        ID
     :documentation "Account number, unique within a bank.") 
    (customer-name
@@ -19,7 +20,8 @@
     :documentation "Type of account, one of gold, silver, or bronze.")))
 
 (defmethod initialize-instance :after ((account bank-account) &key opening-bonus-percent)
-  (with-slots (balance type) account
+  (with-slots (id balance type) account
+    (setf id (incf (slot-value account '%%account-number)))
     (when opening-bonus-percent
       (incf balance (* balance (/ opening-bonus-percent 100))))
     (setf type (cond
