@@ -66,3 +66,15 @@ complement
 (defun foo (&key (a 0) (b 0 b-supplied-p) ((:charlie c) (+ a b))) ...)
 首先是必要形参, 其次是可选形参, 再次是剩余形参, 最后才是关键字形参.
 如果需要同时使用 &optional 和 &key, 首先应该想办法只使用 &key
+
+FORMAT Recipes
+(format nil "~$ ~3$" pi pi)                ==> "3.14 3.142"
+(format nil "~v$" 3 pi)                    ==> "3.142" ; 'v' means "value"
+(format nil "~,3f" pi)                     ==> "3.142"
+(format nil "~:a" nil)                     == (format nil "~:s" nil) ==> "()"
+(format nil "~3~")                         ==> "~~~"
+(format nil "~:c ~@c" #\newline #\newline) ==> "Newline #\\Newline"
+~D, ~X, ~O, ~B, ~R
+(format nil "~d ~:d" 10000 10000) ==> "10000 10,000"
+(format nil "~@d ~@d ~@d" -1 0 1) ==> "-1 +0 +1"
+(format nil "~:@d" 1000)          == (format nil "~@:d" 1000) ==> "+1,000"
