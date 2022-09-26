@@ -75,6 +75,7 @@ FORMAT Recipes
 (format nil "~3~")                         ==> "~~~"
 (format nil "~:c ~@c" #\newline #\newline) ==> "Newline #\\Newline"
 ~D, ~X, ~O, ~B, ~R
-(format nil "~d ~:d" 10000 10000) ==> "10000 10,000"
-(format nil "~@d ~@d ~@d" -1 0 1) ==> "-1 +0 +1"
-(format nil "~:@d" 1000)          == (format nil "~@:d" 1000) ==> "+1,000"
+(format nil "~d ~:d" 10000 10000)  ==> "10000 10,000"
+(format nil "~@d ~@d ~@d" -1 0 1)  ==> "-1 +0 +1"
+(format nil "~:@d" 1000)           ==  (format nil "~10@:r" 1000) == (format nil "~@:d" 1000) ==> "+1,000"
+(format nil "~8,'^,'',4:@d" 10000) ==> "^+1'0000"
