@@ -68,9 +68,6 @@ complement
 如果需要同时使用 &optional 和 &key, 首先应该想办法只使用 &key
 
 FORMAT Recipes
-(format nil "~$ ~3$" pi pi)                ==> "3.14 3.142"
-(format nil "~v$" 3 pi)                    ==> "3.142" ; 'v' means "value"
-(format nil "~,3f" pi)                     ==> "3.142"
 (format nil "~:a" nil)                     == (format nil "~:s" nil) ==> "()"
 (format nil "~3~")                         ==> "~~~"
 (format nil "~:c ~@c" #\newline #\newline) ==> "Newline #\\Newline"
@@ -79,3 +76,20 @@ FORMAT Recipes
 (format nil "~@d ~@d ~@d" -1 0 1)  ==> "-1 +0 +1"
 (format nil "~:@d" 1000)           ==  (format nil "~10@:r" 1000) == (format nil "~@:d" 1000) ==> "+1,000"
 (format nil "~8,'^,'',4:@d" 10000) ==> "^+1'0000"
+~F, ~E, ~G, ~$
+(format nil "~$ ~3$" pi pi)                ==> "3.14 3.142"
+(format nil "~v$" 3 pi)                    ==> "3.142" ; 'v' means "value"
+(format nil "~,3f" pi)                     ==> "3.142"
+(format nil "~2,3$" pi)                    ==> "003.14"
+English-Language Directives
+(format nil "~r; ~:r; ~@r; ~:@r" 4 4 4 4)  ==> "four; fourth; IV; IIII"
+(format nil "~(~a~)"   "FIRE foX") ==> "fire fox"
+(format nil "~@(~a~)"  "FIRE foX") ==> "Fire fox"
+(format nil "~:(~a~)"  "FIRE foX") ==> "Fire Fox"
+(format nil "~:@(~a~)" "FIRE foX") ==> "FIRE FOX"
+(format nil "~:[FAIL~;pass~]" nil)       ==> "FAIL"
+(format nil "~@[~a~];~@[~a~]" nil t)     ==> ";T"
+(format nil "~#[~;~a;~a and ~a~]" 'a 'b) ==> "A and B"
+Iteration
+(format nil "~{~a~^, ~}"               '(1 2 3)) ==> "1, 2, 3"
+(format nil "~{~a~#[~;, and ~:;, ~]~}" '(1 2 3)) ==> "1, 2, and 3"
