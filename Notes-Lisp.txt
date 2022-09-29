@@ -61,6 +61,7 @@ reverse
 (search "bar" "foobar") ==> 3
 (mismatch "foom" "foon") ==> 3
 complement
+(values-list somelist) === (apply #'values somelist)
 
 (defun make-rectangle (width &optional (height width height-supplied-p)) ...)
 (defun foo (&key (a 0) (b 0 b-supplied-p) ((:charlie c) (+ a b))) ...)
@@ -68,13 +69,13 @@ complement
 如果需要同时使用 &optional 和 &key, 首先应该想办法只使用 &key
 
 FORMAT Recipes
-(format nil "~:a" nil)                     == (format nil "~:s" nil) ==> "()"
+(format nil "~:a" nil)                     === (format nil "~:s" nil) ==> "()"
 (format nil "~3~")                         ==> "~~~"
 (format nil "~:c ~@c" #\newline #\newline) ==> "Newline #\\Newline"
 ~D, ~X, ~O, ~B, ~R
 (format nil "~d ~:d" 10000 10000)  ==> "10000 10,000"
 (format nil "~@d ~@d ~@d" -1 0 1)  ==> "-1 +0 +1"
-(format nil "~:@d" 1000)           ==  (format nil "~10@:r" 1000) == (format nil "~@:d" 1000) ==> "+1,000"
+(format nil "~:@d" 1000)           === (format nil "~10@:r" 1000) === (format nil "~@:d" 1000) ==> "+1,000"
 (format nil "~8,'^,'',4:@d" 10000) ==> "^+1'0000"
 ~F, ~E, ~G, ~$
 (format nil "~$ ~3$" pi pi)                ==> "3.14 3.142"
@@ -93,3 +94,23 @@ English-Language Directives
 Iteration
 (format nil "~{~a~^, ~}"               '(1 2 3)) ==> "1, 2, 3"
 (format nil "~{~a~#[~;, and ~:;, ~]~}" '(1 2 3)) ==> "1, 2, and 3"
+
+(loop :for/as i :from/downfrom/upfrom 1 :to/upto/below/downto/above 10 :by 1 :do ...)
+(loop :repeat 10 :do ...)
+(loop :for e :in/on '(1 2 3) :do ...)
+  === (loop :for e :in/on '(1 2 3) :by #'cdr :do ...)
+(loop :for ch :across "abcd" :do ...)
+(loop :for bit :across #*01010 :do ...)
+(loop :for var :being :the :hash-keys/hash-values :in some-hashtable :do ...)
+  === (loop :for var :being :each :hash-key/hash-value :of some-hashtable :do ...)
+(loop :for var :being :the/each :symbols/present-symbols/external-symbols :in/of some-package :do ...)
+  === (loop :for var :being :each :symbol/present-symbol/external-symbol :of some-package :do ...)
+(loop :for k :being :each :hash-key :of some-hashtable :using (:hash-value v) do ...)
+  === (loop :as v :being :the :hash-values :in some-hashtable :using (:hash-key k) do ...)
+(loop :repeat 3 :for i := (random 2) :collect i)                               ==> (0 1 0) potentially
+(loop :repeat 4 :for x := 0 :then y :for y := (1+ x) :then (+ x y) :collect y) ==> (1 2 4 8)
+(loop :repeat 8 :for x := 0 :then y :and y := 1 :then (+ x y) :collect x)      ==> (0 1 1 2 3 5 8 13)
+(loop ... :with a :and b := 233 ... :with c := b ...)
+(loop :for (a b) :in '((1 2) (3 4)) :collect a)                                   ==> (1 3)
+(loop :for (nil b) :in '((1 2) (3 4)) :collect b)                                 ==> (2 4)
+(loop :for (a . b) :on '(1 2 3) :do (format t "~a" a) :when b :do (format t " ")) ==> 1 2 3
