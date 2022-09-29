@@ -1,9 +1,8 @@
-(defvar Y #'(lambda (f)
-              ((lambda (g)
-                 (funcall g g))
-               #'(lambda (x)
-                   (funcall f #'(lambda (&rest args)
-                                  (apply (funcall x x) args)))))))
+(defconstant Y #'(lambda (f)
+                   (let ((g #'(lambda (x)
+                                (funcall f #'(lambda (&rest args)
+                                               (apply (funcall x x) args))))))
+                     (funcall g g))))
 
 (defparameter fib (funcall Y #'(lambda (f)
                                  #'(lambda (n a b)
@@ -11,6 +10,6 @@
                                          a
                                          (funcall f (1- n) b (+ a b)))))))
 
-(defun fib (n)
+(defun fib-n (n)
   (dotimes (i n)
     (format t "~a~%" (funcall fib i 0 1))))
