@@ -15,10 +15,9 @@ template<typename return_t, typename ...arguments_t>struct Y {
         return g(g);
     }
 };
-#include <utility>
 template<typename return_t, typename ...arguments_t> auto y = [](const auto& f) {
     return [](const auto& g) {return g(g);} ([&f](const auto& x) ->std::function<return_t(arguments_t...)> {
-        return f(std::move([&x](arguments_t ...args) {return x(x)(args...);}));
+        return f([&x](arguments_t ...args) {return x(x)(args...);});
     });
 };
 
