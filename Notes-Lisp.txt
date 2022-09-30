@@ -95,7 +95,17 @@ Iteration
 (format nil "~{~a~^, ~}"               '(1 2 3)) ==> "1, 2, 3"
 (format nil "~{~a~#[~;, and ~:;, ~]~}" '(1 2 3)) ==> "1, 2, and 3"
 
-(loop :for/as i :from/downfrom/upfrom 1 :to/upto/below/downto/above 10 :by 1 :do ...)
+(loop [:named name] :with a :and b := 233 
+  :for/as i :from/downfrom/upfrom 1 :to/upto/below/downto/above 10 :by 1
+  :if-else/when/unless (...)
+  :collect/append/nconc/count/sum/maximize/minimize ... [:into some-container] and ... 
+  [:end] 
+  :with c := b ...
+  :for/as ... 
+    :collect/append/nconc/count/sum/maximize/minimize ... [:into some-container] :collect/append/nconc/count/sum/maximize/minimize ... [:into some-container] ...
+  :do/doing (...) (...) ...
+  :initially (可引用循环体内的词法变量) (...) ...
+  :finally (可引用循环体内的词法变量) (...) ...) ; 使用 loop-finish 宏形式返回时会执行 :finally 子句
 (loop :repeat 10 :do ...)
 (loop :for e :in/on '(1 2 3) :do ...)
   === (loop :for e :in/on '(1 2 3) :by #'cdr :do ...)
@@ -110,7 +120,19 @@ Iteration
 (loop :repeat 3 :for i := (random 2) :collect i)                               ==> (0 1 0) potentially
 (loop :repeat 4 :for x := 0 :then y :for y := (1+ x) :then (+ x y) :collect y) ==> (1 2 4 8)
 (loop :repeat 8 :for x := 0 :then y :and y := 1 :then (+ x y) :collect x)      ==> (0 1 1 2 3 5 8 13)
-(loop ... :with a :and b := 233 ... :with c := b ...)
 (loop :for (a b) :in '((1 2) (3 4)) :collect a)                                   ==> (1 3)
 (loop :for (nil b) :in '((1 2) (3 4)) :collect b)                                 ==> (2 4)
 (loop :for (a . b) :on '(1 2 3) :do (format t "~a" a) :when b :do (format t " ")) ==> 1 2 3
+(loop :for e :in '(1 2 3) :counting (oddp e) :into odds :sum e :into total :maximize e :into max :finally (return `(,odds ,total ,max))) ==> (2 6 3)
+(loop ... :when (do something) :collect :it ...) ; (do something) ==> :it
+(loop :for number :in numbers :while/until/always/never/thereis (...) :finally (...)) ; :while 和 :until 测试失败时会执行 :finally 子句
+(loop :named name
+  :initially (...) ...
+  :with var-A := 233 and var-B and ...
+  :for ...
+  :repeat 233
+  :when/unless... (...) :collect... elem :into container :and ... :end
+  :do (...) ...
+  :while/until... (...)
+  :finally (...) ...)
+named initially with repeat = for/as/and being the/each hash-key(s)/hash-value(s)/symbol(s)/present-symbol(s)/external-symbol(s) from/downfrom/upfrom to/upto/below/downto/above by in/on/across/of using then if/when/unless end it collect(ing)/append(ing)/nconc(ing)/count(ing)/sum(ming)/maximize/maximizing/minimize/minimizing into do return while/until/always/never/thereis finally
