@@ -5,10 +5,11 @@ template<typename return_t, typename ...arguments_t>struct Y {
         static const struct G {
             const F& f;
             recursive_function_t operator()(const G& g) const {
-                static const auto fn = [&g](arguments_t ...args) ->return_t {
-                    return g(g)(args...);
+                static const auto gg = [&g](arguments_t ...args) ->return_t {
+                    static const auto fn = g(g);
+                    return fn(args...);
                 };
-                return f(fn);
+                return f(gg);
             }
         } g{f};
         return g(g);
