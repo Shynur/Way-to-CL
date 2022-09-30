@@ -15,15 +15,21 @@ template<typename return_t, typename ...arguments_t>struct Y {
         return g(g);
     }
 };
+template<typename return_t, typename ...arguments_t> auto y = [](const auto& f) {
+    return [](const auto& g) {return g(g);} ([&f](const auto& x) ->std::function<return_t(arguments_t...)> {
+        const static auto _ = [&x](arguments_t...args) {return x(x)(args...);};
+        return f(_);
+    });
+};
 
 #include <iostream>
 int main() {
-    auto fib = Y<size_t, size_t>{}([](const auto& f) {
-        return [&f](size_t n) {
-            return n <= 1 ? n : (f(n - 1) + f(n - 2));
+    auto fib = y<size_t, uint8_t, size_t, size_t>([](const auto & f) {
+        return [&f](uint8_t n, size_t a, size_t b) {
+            return n == 0 ? a : f(--n, b, a + b);
         };
     });
-    
+
     for (auto i{0}; i != 10; ++i)
-        std::cout << fib(i) << std::endl;
+        std::cout << fib(i,0,1) << std::endl;
 }
