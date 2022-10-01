@@ -1,35 +1,32 @@
-;;;; A Portable Pathname Library
-;;;;
-;;;; The basic operations the library will support will be getting a list of
-;;;; files in a directory and determining whether a file or directory with a
-;;;; given name exists. There is also a function for recursively walking a
-;;;; directory hierarchy, calling a given function for each pathname in the
-;;;; tree.
+(defpackage :shynur.path
+  (:documentation
+"
+The basic operations the library supports are:
+  getting a list of files in a directory;
+  determining whether a file or directory with a given name exists;
+  walking a directory hierarchy recursively.
 
-(defun show (pathname)
-  (format t "host:      ~a
-device:    ~a
-directory: ~a
-name:      ~a
-type:      ~a
-version:   ~a
-" (pathname-host pathname) (pathname-device pathname) (pathname-directory pathname) (pathname-name pathname) (pathname-type pathname) (pathname-version pathname)))
+Compatibility: SBCL, CMUCL, LispWorks, OpenMCL, Allegro, CLISP.
+" )
+  (:use :common-lisp)
+  (:export :ls))
 
-;;; Listing a Directory
+(in-package :shynur.path)
 
-(defun component-present-p (val)
-  "tell whether a pathname object's component exists"
-  (and val
-       (not (eq val :unspecific))))
+;;; Listing a Directory ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun dir-pathname-p (path)
-  "tell whether the given pathname is a directory form"
-  (and (not (component-present-p (pathname-name path)))
-       (not (component-present-p (pathname-type path)))
-       p)) ; i do not know why test "p"
+  "tell whether the given pathname represents a directory"
+  (let ((component-present-p #'(lambda (component)
+                                 (and component
+                                      (not (eq component :unspecific))))))
+    (and (not (funcall component-present-p (pathname-name path)))
+         (not (funcall component-present-p (pathname-type path))))))
 
 (defun path->dir (path)
-  "convert any form of path to a pathname in directory form"
+  "convert path to a pathname in directory form.
+   examples: ./lisp-works/ -> ./lisp-works/
+             works/halo.md -> works/halo.md/"
   (when (wild-pathname-p (setf path (pathname path)))
     (error "Cannot reliably convert wild pathnames."))
   (if (dir-pathname-p path)
@@ -41,34 +38,25 @@ version:   ~a
                                             '(:relative))
                                         `(,(file-namestring path))))))
 
-(defun dir/* (dir)
-  "return a wildcard representing any file in the given directory"
-  (make-pathname :defaults (path->dir dir)
-                 :name :wild
-                 :type #-clisp :wild #+clisp nil))
-
 ;; API
-(defun ls-dir (dir)
+(defun ls (dir)
   "return all files and directories in the given directory"
   (when (wild-pathname-p dir)
     (error "Can only list concrete directory names."))
-  (setf dir (dir/* dir))
-  #+(or sbcl cmu lispworks) (directory dir)
-  #+openmcl                 (directory dir :directories           t)
-  #+allegro                 (directory dir :directories-are-files nil)
-  #+clisp            (nconc (directory dir)
-                            (directory (clisp-subdir-wildcard dir)))
-  #-(or sbcl cmu lispworks openmcl allegro clisp) ; unknown implement
-  (error "LS-DIR is not implemented."))
+  (let ((dir/* (make-pathname :defaults (path->dir dir)
+                              :name     :wild
+                              :type     #-clisp :wild
+                                        #+clisp nil)))
+    #+(or sbcl cmu lispworks) (directory dir/*)
+    #+openmcl                 (directory dir/* :directories           t)
+    #+allegro                 (directory dir/* :directories-are-files nil)
+    #+clisp                   (nconc (directory dir/*)
+                                     (directory (make-pathname :defaults  dir/*
+                                                               :name      nil
+                                                               :type      nil
+                                                               :directory (append (pathname-directory dir/*) '(:wild)))))))
 
-#+clisp
-(defun clisp-subdir-wildcard (dir)
-  (make-pathname :defaults  dir
-                 :name      nil
-                 :type      nil
-                 :directory (append (pathname-directory dir) '(:wild))))
-
-;;; Testing a File’s Existence
+;;; Testing a File’s Existence ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; API
 (defun file-exists-p (path)
@@ -97,7 +85,7 @@ version:   ~a
                        :type      (pathname-type name&type)))
       path))
 
-;;; Walking a Directory Tree
+;;; Walking a Directory Tree ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defvar *tree-depth* 0
   "tell the current recursive depth in a directory tree")
@@ -106,7 +94,7 @@ version:   ~a
 (defun tree@dir (dir fn &key directories (test (constantly t)))
   ":directories permits directories to be passed to fn; pathname tested T by :test will be passed to fn"
   (labels ((walk (arg-dir)
-             (dolist (path (ls-dir arg-dir))
+             (dolist (path (ls arg-dir))
                (cond ((dir-pathname-p path)
                       (when (and directories (funcall test path))
                         (funcall fn path))
