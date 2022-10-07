@@ -1,6 +1,0 @@
-(defmacro once-only ((&rest names) &body body)
-  (let ((gensyms (loop for name in names collect (gensym))))
-    `(let (,@(loop for sym in gensyms collect `(,sym (gensym))))
-       `(let (,,@(loop for sym in gensyms for name in names collect ``(,,sym ,,name)))
-          ,(let (,@(loop for name in names for sym in gensyms collect `(,name ,sym)))
-             ,@body)))))
