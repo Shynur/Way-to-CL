@@ -1,4 +1,4 @@
-C-c RET 调用 slime-macroexpansion 函数
+C-c RET 调用 macroexpand-1 函数
 C-c C-c 编译函数
 C-c C-z 回到 REPL
 C-c C-l 加载文件
