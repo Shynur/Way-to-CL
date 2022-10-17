@@ -1,5 +1,5 @@
 (asdf:defsystem "path-tools"
-  :description "some simple manipulation functions on path"
+  :description "Some simple manipulation functions on path."
   :version "0.1" 
   :license "The Unlicense"
   :author "Shynur <one.last.kiss@outlook.com>"

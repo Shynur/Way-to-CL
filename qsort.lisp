@@ -1,12 +1,14 @@
-(defun qsort (seq &optional (less-than #'<))
-  "revive a classic bug: (qsort '(2 1 3)) ==> Recursive Error"
-  (let ((len (length seq)))
-    (if (< len 2)
-        (copy-seq seq)
-        (let ((mid-elem (elt seq (floor len 2))) ; BUG. correct: (floor len 2) -> (random len)
+(defun qsort (list &optional (< #'cl:<))
+  "revive a classic bug: (qsort '(2 1 3)) ==> Recursive `Error'"
+  (declare (list list))
+  (let ((length (length list)))
+    (if (cl:< length 2)
+        list
+        (let ((midian (nth (floor length 2) list)) ; BUG. correct: (floor len 2) -> (random len)
               (lessers  ())
               (greaters ()))
-          (count () seq :key #'(lambda (x) (if (funcall less-than x mid-elem)
-                                               (push x lessers)
-                                               (push x greaters))))
+          (loop :for e :in list
+                :do (when (funcall < e midian)
+                      (push e lessers)
+                      (push e greaters)))
           (concatenate 'list (qsort lessers) (qsort greaters))))))
