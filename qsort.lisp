@@ -4,7 +4,7 @@
   (let ((length (length list)))
     (if (cl:< length 2)
         list
-        (let ((midian (nth (floor length 2) list)) ; BUG. correct: (floor len 2) -> (random len)
+        (let ((midian (nth (floor length 2) list)) ; BUG. correct: `(floor len 2)' -> `(random len)'
               (lessers  ())
               (greaters ()))
           (loop :for e :in list
