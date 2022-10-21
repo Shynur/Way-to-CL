@@ -2,37 +2,37 @@
 
 先作一简单列举, 这 $25$ 个分别是:
 
-- `quote` `function` `if` `progn`
-- `let` `let*` `setq` `flet` `labels` `macrolet` `symbol-macrolet`
-- `block` `return-from` `tagbody` `go`
-- `catch` `throw` `unwind-protect`
-- `multiple-value-call` `multiple-value-prog1`
+- `quote`  `function`  `if`  `progn`
+- `let`  `let*`  `setq`  `flet`  `labels`  `macrolet`  `symbol-macrolet`
+- `block`  `return-from`  `tagbody`  `go`
+- `catch`  `throw`  `unwind-protect`
+- `multiple-value-call`  `multiple-value-prog1`
 - `eval-when`
-- `locally` `the` `load-time-value` `progv`
+- `locally`  `the`  `load-time-value`  `progv`
+
+___
 
 ## 控制求值
 
-`quote` 完全阻止求值, 从而获取作为数据的*S-表达式*.
+`Quote` 完全**阻止**求值, 从而获取作为数据的*S-表达式*.
 
-`function` 则避免获取 给定名字的符号 所绑定的值, 而是取得其绑定的函数.
-
-___
-
-`if` 的功能同 C++ 中的 `?:` 三目运算符.
-
-`cond` 宏构建在 `if` 之上.
-
-当然, 在有些方言中, `cond` 是 *special operator* 而 `if` 不是, 包括 McCarthy 的初代 Lisp. 但它俩是可以相互转化的.
+`Function` 避免获取 给定名字的符号 所绑定的值, 而是取得其绑定的函数.
 
 ___
 
-`progn` 按给定的顺序, 串联一组 *lisp 形式*.
+`If` 的功能同 C++ 中的 `?:` 三目运算符.
+
+`Cond` 宏构建在 `if` 之上[^if-cond].
 
 ___
 
-## 操纵词法环境
+`Progn` 按给定的顺序, 串联一组 *lisp 形式*.
 
-`let` 和 `let*` 通过创建词法域, 允许你引入词法变量.
+___
+
+## 布置词法环境
+
+`Let` 和 `let*` 通过创建**词法域**, 允许你引入词法变量.
 
 任何诸如 `do` 或 `dotimes` 这类引入了词法变量绑定的结构, 都将被展开成 `let` 或 `let*` 形式.
 
@@ -48,13 +48,13 @@ Technically, 类似于 `let` 形式这样的结构也可以展开成一个 $\lam
 
 ___
 
-`setq` 设置那些由 `let` 和 `let*` 所创建的词法绑定.
+`Setq` 设置那些由 `let` 和 `let*` 所创建的词法绑定.
 
 ___
 
 类似于 `let` 与 `let*`, `flet` 定义只能在其主体内访问的局部函数, 而由 `labels` 所引入的函数名可以**立即**使用 (首先想到的应当是递归). 由于 `flet` 和 `labels` 可以出现在词法域中, 所以这些局部函数也是可能成为*闭包*的.
 
-`flet` 不能用来定义递归函数[^Y-combinator], 似乎是一种限制. 但辩证地看, 这正是它和 `labels` 之间的一种**对称的**差异, `flet` 所引入的局部函数可以调用另一个同名的函数. 像这样:
+`Flet` 不能用来定义递归函数[^Y-combinator], 似乎是一种限制. 但辩证地看, 这正是它和 `labels` 之间的一种**对称的**差异, `flet` 所引入的局部函数可以调用另一个同名的函数. 像这样:
 
 ```commonlisp
 (defun f () 42)
@@ -70,14 +70,14 @@ ___
 
 ___
 
-类似地, `macrolet` 提供局部宏的构造. 由它所引入的宏的名字会 shadow 外围的同名的函数和宏.
+类似地, `macrolet` 提供局部宏的构造. 由它所引入的宏的名字会 *shadow* 外围的同名的函数和宏.
 
 局部宏除了简单地正常使用以外, 在定义宏时也有两种惯常用法:
 
 1. 提供给用户仅能在宏的主体内调用的宏.
-2. 局部地 Shadow 某些函数或宏的名字.
+2. 局部地 ***shadow*** 某些函数或宏的名字.
 
-`symbol-macrolet` 在局部定义了一种特殊类型的宏 —— 符号宏. 举个简单的例子:
+`Symbol-macrolet` 在局部定义了一种特殊类型的宏 —— 符号宏. 举个简单的例子:
 
 ```commonlisp
 (defclass coordinate ()
@@ -94,7 +94,7 @@ ___
 
 ## 局部控制流
 
-`block` 通常与 `return-from` 成对使用. `block` 用第一个名字命名块, 块中的形式按顺序求值, 其中最后一个形式求值后作为整个 `block` 形式的值;<br>`return-from` 就如同字面意思, 它的用法是这样 `(return-from block-name &optional value)`.
+`Block` 通常与 `return-from` 成对使用. `Block` 用第一个名字命名块, 块中的形式按顺序求值, 其中**最后一个形式**求值后作为整个 `block` 形式的值;<br>`Return-from` 就如同字面意思, 它的用法是这样 `(return-from block-name &optional value)`.
 
 ```commonlisp
 (block earth
@@ -103,15 +103,15 @@ ___
           :do (return-from earth 'launch!)))
 ```
 
-`block` 定义的块名可以是任何符号 (包括 `nil`). 例如:
+`Block` 定义的块名可以是任何符号 (包括 `nil`). 例如:
 
-- 诸如 `do`, `dotimes` 和 `dolist` 这类宏, 都将用户代码包装在一个名为 `nil` 的块中, 这将允许用户使用 `return` 宏跳出循环 (该宏是 `(return-from nil &optional value)` 的语法糖).
+- 诸如 `do`, `dotimes` 和 `dolist` 这类宏, 都将用户代码包装在一个名为 **`nil`** 的块中, 这将允许用户使用 `return` 宏跳出循环 (该宏是 `(return-from nil &optional value)` 的语法糖).
 
-- `defun`, `flet` 和 `labels` 等则会将它们定义的函数体封装在与函数同名的 `block` 中.
+- `Defun`, `flet` 和 `labels` 等则会将它们定义的函数体封装在**与函数同名**的 `block` 中.
 
 ___
 
-`tagbody` 通常与 `go` 成对使用. 注意, 任何出现在 `tagbody` 形式的顶层的符号都会被当成 tag. 用法如下:
+`Tagbody` 通常与 `go` 成对使用. 注意, 任何出现在 `tagbody` 形式的**顶层的符号**都会被当成 tag. 用法如下:
 
 ```commonlisp
 (tagbody
@@ -135,15 +135,15 @@ ___
 
 少数宏并不会传递子形式. 尤其是 `prog1`, 它像 `progn` 那样求值, 但仅返回第一个子形式的主值; 类似地, `prog2` 仅返回第二个子形式的主值.
 
-`multiple-value-prog1` 可以看作 `prog1` 的变体, 它返回的是多值.
+`Multiple-value-prog1` 可以看作 `prog1` 的变体, 它返回的是多值.
 
-另外, `or` 和 `cond` 也并不总是会返回多值. 对于特定的子形式, 可能只有主值被使用.
+另外, `or` 和 `cond` 也**并不总是**会返回多值. 对于特定的子形式, 可能只有主值被使用.
 
 ___
 
 返回多值通常使用函数 `values` 或函数 `values-list`, 且有 `(values-list values) #| === |# (apply #'values values)`.
 
-`multiple-value-call` 与 `funcall` 相似, 具体如下:
+`Multiple-value-call` 与 `funcall` 相似, 具体如下:
 
 ```commonlisp
 (funcall #'+ (values 6 9)) ; ==> 6
@@ -173,13 +173,31 @@ ___
 
 ## `EVAL-WHEN`
 
+这是**巫师级别**的话题, 详细展开讲的话会牵扯到一些晦涩的知识.
+
+在此只教你如何尽可能地避开使用 `eval when`:
+
+1. 直接 *load* 源文件, 而不是先编译后加载.
+
+2. 如果做不到上一条的话,
+
+    - 不要试图编写能在编译期保存信息的宏.
+
+    - 请将 宏的 helper 函数定义 与 宏定义 分别编写在不同的文件中, 确保先 *load* 前者.
+
 ___
 
 ## Others[^the-other-special-operators]
 
-`locally` 和 `the` 是 CL *声明系统* 的一部分, 用于与编译器沟通 而不会影响代码的语义. 主要是帮助生成更好的代码, 比如, 更好的性能, 更清晰的错误信息, 等等.
+`Locally` 和 `the` 是 CL *声明系统* 的一部分, 用于**与编译器沟通** 而不会影响代码的语义. 主要是帮助生成更好的代码, 比如, 更好的性能, 更清晰的错误信息, 等等.
 
+`Locally` 只会创建一个用来书写声明的域, 它不会做任何其它事情.
 
+`The` 用于声明表达式的值的类型.
+
+___
+
+`Load-time-value` 和 `progv` 很少用到[^the-last-two].
 
 ___
 
@@ -187,4 +205,8 @@ ___
 
 [^f2cl]: 一个例子是将 Fortran 转译到 CL 的 f2cl 转译器, 这使得 Lisper 可以使用某些 Fortran 库. 许多 Fortran 库写于结构化编程革命以前, 所以代码中充斥着 `goto` 语句. 相比之下, f2j (Fortran 到 Java 的转译器) 就繁琐得多: 尽管 JVM 提供 `goto` 指令, 但并没有直接暴露给 Java, 为此, f2j 先借助*哑类 (dummy class)* 表示标签和跳转调用, 将 Fortran 转译成 Java 源码, 再对编译成字节码的 Java 源码进行后处理, 把那些代表对哑类的调用的字节码修正为合适的字节码.
 
-[^the-other-special-operators]: `locally`, `the`, `load-time-value` 和 `progv` 都将允许你访问 以任何其它方式都无法访问的 语言的底层.
+[^the-other-special-operators]: `Locally`, `the`, `load-time-value` 和 `progv` 都将允许你访问 以任何其它方式都无法访问的 语言的底层.
+
+[^if-cond]: 当然, 在有些方言中, `cond` 是 *special operator* 而 `if` 不是, 包括 McCarthy 的初代 Lisp. 但它俩是可以相互转化的.
+
+[^the-last-two]: In his *Practical Common Lisp*, Peter Seibel writes, "The other two, LOAD-TIME-VALUE and PROGV, are infrequently used, and explaining the reason why you might ever want to use them would take longer than explaining what they do. So I'll just tell you what they do so you know they're there. Someday you'll hit on one of those rare times when they're just the thing, and then you'll be ready."
