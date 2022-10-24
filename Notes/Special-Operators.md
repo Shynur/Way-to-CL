@@ -1,4 +1,4 @@
-# [Special-Operator] 25
+# [Special Operator] 25
 
 先作一简单列举, 这 $25$ 个分别是:
 
@@ -216,8 +216,8 @@ ___
 ```commonlisp
 (defvar *year* 2022)
 (progv '(*year*) '(2023)
-  *x*) ; ==> 2023
-*day*  ; ==> 22
+  *year*) ; ==> 2023
+*year*    ; ==> 2022
 
 (let ((year 2024)) 
   (progv '(year) '(2025)
